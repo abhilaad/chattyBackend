@@ -94,6 +94,10 @@ export class UserCache extends BaseCache {
       response.bgImageId = Helpers.parseJson(`${response.bgImageId}`);
       response.bgImageVersion = Helpers.parseJson(`${response.bgImageVersion}`);
       response.profilePicture = Helpers.parseJson(`${response.profilePicture}`);
+      response.work = Helpers.parseJson(`${response.work}`);
+      response.school = Helpers.parseJson(`${response.school}`);
+      response.location = Helpers.parseJson(`${response.location}`);
+      response.quote = Helpers.parseJson(`${response.quote}`);
 
       return response;
     } catch (error) {
@@ -107,7 +111,7 @@ export class UserCache extends BaseCache {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
-      const response: string[] = await this.client.ZRANGE('user', start, end, { REV: true });
+      const response: string[] = await this.client.ZRANGE('user', start, end); // ZRANGE('user', start, end, { REV: true }) is giving syntax error
       const multi: ReturnType<typeof this.client.multi> = this.client.multi();
       for(const key of response) {
         if(key !== excludedUserKey) {
@@ -128,6 +132,10 @@ export class UserCache extends BaseCache {
         reply.bgImageId = Helpers.parseJson(`${reply.bgImageId}`);
         reply.bgImageVersion = Helpers.parseJson(`${reply.bgImageVersion}`);
         reply.profilePicture = Helpers.parseJson(`${reply.profilePicture}`);
+        reply.work = Helpers.parseJson(`${reply.work}`);
+        reply.school = Helpers.parseJson(`${reply.school}`);
+        reply.location = Helpers.parseJson(`${reply.location}`);
+        reply.quote = Helpers.parseJson(`${reply.quote}`);
 
         userReplies.push(reply);
       }
@@ -168,6 +176,10 @@ export class UserCache extends BaseCache {
         reply.bgImageId = Helpers.parseJson(`${reply.bgImageId}`);
         reply.bgImageVersion = Helpers.parseJson(`${reply.bgImageVersion}`);
         reply.profilePicture = Helpers.parseJson(`${reply.profilePicture}`);
+        reply.work = Helpers.parseJson(`${reply.work}`);
+        reply.school = Helpers.parseJson(`${reply.school}`);
+        reply.location = Helpers.parseJson(`${reply.location}`);
+        reply.quote = Helpers.parseJson(`${reply.quote}`);
       }
       return replies;
     } catch (error) {
