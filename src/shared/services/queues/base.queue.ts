@@ -29,7 +29,8 @@ type IBaseJobData =
   | IUserJob;
 
 let bullAdapters: BullAdapter[] = [];
-export let serverAdapter: ExpressAdapter;
+export const serverAdapter: ExpressAdapter = new ExpressAdapter();
+serverAdapter.setBasePath('/queues');
 
 export abstract class BaseQueue {
   queue: Queue.Queue;
@@ -39,8 +40,6 @@ export abstract class BaseQueue {
     this.queue = new Queue(queueName, `${config.REDIS_HOST}`);
     bullAdapters.push(new BullAdapter(this.queue));
     bullAdapters = [...new Set(bullAdapters)];
-    serverAdapter = new ExpressAdapter();
-    serverAdapter.setBasePath('/queues');
 
     createBullBoard({
       queues: bullAdapters,
@@ -59,6 +58,10 @@ export abstract class BaseQueue {
 
     this.queue.on('global:stalled', (jobId: string) => {
       this.log.info(`Job ${jobId} is stalled`);
+    });
+
+    this.queue.on('failed', (job: Job, error: Error) => {
+      this.log.error(`Job ${job.id} failed with error: ${error.message}`);
     });
   }
 

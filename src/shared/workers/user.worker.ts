@@ -8,12 +8,14 @@ const log: Logger = config.createLogger('userWorker');
 class UserWorker {
   async addUserToDB(job: Job, done: DoneCallback): Promise<void> {
     try {
+      log.info(`Processing job: ${job.id} for adding user to DB.`);
       const { value } = job.data;
       await userService.addUserData(value);
+      log.info(`Successfully added user to DB for job: ${job.id}`);
       job.progress(100);
       done(null, job.data);
     } catch (error) {
-      log.error(error);
+      log.error(`Error adding user to DB for job: ${job.id}`, error);
       done(error as Error);
     }
   }

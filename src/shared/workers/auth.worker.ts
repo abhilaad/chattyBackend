@@ -8,12 +8,15 @@ const log: Logger = config.createLogger('authWorker');
 class AuthWorker {
   async addAuthUserToDB(job: Job, done: DoneCallback): Promise<void> {
     try {
+      log.info(`Processing job: ${job.id} for adding auth user to DB.`);
       const { value } = job.data;
       await authService.createAuthUser(value);
+      log.info(`Successfully added auth user to DB for job: ${job.id}`);
+
       job.progress(100);
       done(null, job.data);
     } catch (error) {
-      log.error(error);
+      log.error(`Error adding auth user to DB for job: ${job.id}`, error);
       done(error as Error);
     }
   }
