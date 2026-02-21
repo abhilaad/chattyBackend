@@ -12,6 +12,7 @@ import HTTP_STATUS from 'http-status-codes';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { UserCache } from '@service/redis/user.cache';
 import JWT from 'jsonwebtoken';
+import { userService } from '@service/db/user.service';
 import { authQueue } from '@service/queues/auth.queue';
 import { userQueue } from '@service/queues/user.queue';
 import { config } from '@root/config';
@@ -49,8 +50,13 @@ export class SignUp {
     await userCache.saveUserToCache(`${userObjectId}`, uId, userDataForCache);
 
     // Add to database
-    authQueue.addAuthUserJob('addAuthUserToDB', { value: authData });
-    userQueue.addUserJob('addUserToDB', { value: userDataForCache });
+    if (config.ENABLE_QUEUES) {
+      authQueue.addAuthUserJob('addAuthUserToDB', { value: authData });
+      userQueue.addUserJob('addUserToDB', { value: userDataForCache });
+    } else {
+      await authService.createAuthUser(authData);
+      await userService.addUserData(userDataForCache);
+    }
 
     const userJwt: string = SignUp.prototype.signToken(authData, userObjectId);
     req.session = { jwt: userJwt };

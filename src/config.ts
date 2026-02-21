@@ -20,6 +20,7 @@ class Config {
   public SENDGRID_API_KEY: string | undefined;
   public SENDGRID_SENDER: string | undefined;
   public EC2_URL: string | undefined;
+  public ENABLE_QUEUES: boolean;
 
 
   private readonly DEFAULT_DATABASE_URL = 'mongodb://localhost:27017/chattyapp-backend';
@@ -40,6 +41,7 @@ class Config {
     this.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
     this.SENDGRID_SENDER = process.env.SENDGRID_SENDER || '';
     this.EC2_URL = process.env.EC2_URL || '';
+    this.ENABLE_QUEUES = process.env.ENABLE_QUEUES === 'true';
   }
 
   public createLogger(name: string): bunyan {
