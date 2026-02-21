@@ -37,7 +37,13 @@ export abstract class BaseQueue {
   log: Logger;
 
   constructor(queueName: string) {
-    this.queue = new Queue(queueName, `${config.REDIS_HOST}`);
+    this.queue = new Queue(queueName, `${config.REDIS_HOST}`, {
+      redis: {
+        tls: {
+          rejectUnauthorized: false
+        }
+      }
+    });
     bullAdapters.push(new BullAdapter(this.queue));
     bullAdapters = [...new Set(bullAdapters)];
 
